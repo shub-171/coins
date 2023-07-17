@@ -1,0 +1,114 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    scroll-behavior: smooth;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// header
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1.2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.72);
+    position: sticky;
+    margin-bottom: 1rem;
+    background-color: rgb(28, 28, 28);
+    color: #ff8800;
+
+    > h1{
+        font-family: cursive, sans-serif;
+        font-size: 1.7rem;
+    }
+
+    > main{
+        display: flex;
+        gap: 0.5rem;
+    
+        >a{
+            padding: 0 0.2rem;
+            color: #f2f2f2;
+            font-size: 1.2rem;
+    
+            &:hover{
+                color: rgb(255, 183, 0);
+            }
+        }
+    }
+}
+
+.container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 2rem 4rem;
+}
+.coin{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background-color: rgb(243, 243, 243);
+    color: rgb(21, 21, 21);
+    border-radius: 1rem;
+    box-shadow: 5px 10px 10px rgb(157, 157, 157);
+    width: 12rem;
+    height: 12rem;
+    margin: 1rem;
+    text-align: center;
+
+    > img{
+        width: 4rem;
+        height: 4rem;
+        object-fit: contain;
+        margin: 0.5rem;
+    }
+
+    > p{
+        font-size: 1rem;
+    }
+
+    &:hover{
+        transform: scale(1.1);
+        transition: all 0.3s;
+    }
+}
+
+.loader{ 
+    width: 100%;
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > div{
+        width: 12rem;
+        height: 12rem;
+        border-bottom: 0.3rem solid black;
+        border-radius: 50%;
+        animation: rotation 0.4s linear infinite;
+    }
+    @keyframes rotation{
+        to{
+            transform: rotate(360deg);
+        }
+    }
+}
+
+// radio button in coins page
+
+.selectCurrency{
+    display: flex;
+    gap: 1.4rem;
+    margin: 2rem 5rem;
+
+    > label input[type="radio"]{
+        margin-right: 0.3rem;
+    }
+}
