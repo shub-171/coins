@@ -1,50 +1,61 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from "axios";
 import Loader from './Loader';
 import { Link } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Coins = () => {
     const [coins, setCoins] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currency, setCurrency] = useState("inr");
     const [page, setPage] = useState(1);
+    const [loadedPages, setLoadedPages] = useState([]); // Track the loaded pages
+    const [hasMore, setHasMore] = useState(true);
 
     const currencySymbol = currency === "inr" ? "₹" : currency === "eur" ? "€" : "$";
+
+    const handleScroll = useCallback(() => {
+        if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+            if (hasMore && !loading) {
+                setLoading(true);
+                setPage(prevPage => prevPage + 1);
+            }
+        }
+    }, [hasMore, loading]);
 
     useEffect(() => {
         const fetchCoins = async () => {
             try {
-                const apiLink = `https://api.coingecko.com/api/v3`
-                const { data } = await axios.get(`${apiLink}/coins/markets?vs_currency=${currency}&page=${page}&per_page=20`);
-                setCoins(data);
-                setLoading(false);
-                console.log(data);
-            }
-            catch (error) {
-                alert("Couldn't able to fetch data!")
+                if (!loadedPages.includes(page)) { // Check if the page is not loaded yet
+                    const apiLink = `https://api.coingecko.com/api/v3`
+                    const { data } = await axios.get(`${apiLink}/coins/markets?vs_currency=${currency}&page=${page}&per_page=20`);
+                    if (data.length === 0) {
+                        setHasMore(false);
+                    } else {
+                        // Append new data to the existing coins state
+                        setCoins(prevCoins => [...prevCoins, ...data]);
+                        setLoading(false);
+                    }
+                    // Update the loadedPages state with the loaded page number
+                    setLoadedPages(prevLoadedPages => [...prevLoadedPages, page]);
+                } else {
+                    setLoading(false);
+                }
+            } catch (error) {
+                alert("Couldn't able to fetch data!");
             }
         };
         fetchCoins();
-    }, [currency, page]);
+    }, [currency, page, loadedPages]); // Include loadedPages in the dependency array
 
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [handleScroll]);
 
     const handleChange = e => {
         setCurrency(e.target.value)
-    }
-
-    const changePage =()=>{
-        console.log("page change")
-        setPage(page + 1)
-    }
-
-    const hasMore=()=>{
-        if(coins.length > 0){
-            return true;
-        }
-        else{
-            return false;
-        }
     }
 
     return (
@@ -65,32 +76,23 @@ const Coins = () => {
                             EUR
                         </label>
                     </div>
-                    <div>
-                        <InfiniteScroll 
-                            dataLength={coins.length}
-                            next={changePage}
-                            hasMore={hasMore}
-                            // loader={<Loader />}
-                            className="container"
-                        >
-                        {
-                            coins.map((i) => (
-                                <Link to={`/coin/${i.id}`}>
-                                <div className="coin" key={i.id}>
-                                    <img src={i.image} alt={i.name} />
-                                    <h1>{i.symbol}</h1>
-                                    <h4>{i.name}</h4>
-                                    <p>{currencySymbol + i.current_price}</p>
+                    <div className='container'>
+                        {coins.map((coin) => (
+                            <Link to={`/coin/${coin.id}`} key={coin.id}>
+                                <div className="coin">
+                                    <img src={coin.image} alt={coin.name} />
+                                    <h1>{coin.symbol}</h1>
+                                    <h4>{coin.name}</h4>
+                                    <p>{currencySymbol + coin.current_price}</p>
                                 </div>
-                                </Link>
-                            ))
-                        }
-                        </InfiniteScroll>
+                            </Link>
+                        ))}
+                        {loading && <Loader />}
                     </div>
                 </>
             }
         </>
-    )
+    );
 }
 
-export default Coins
+export default Coins;
