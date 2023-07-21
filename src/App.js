@@ -7,6 +7,7 @@ import Coins from './components/Coins'
 import CoinDetails from './components/CoinDetails'
 
 import "./styles/App.scss"
+// import Footer from './components/Footer'
 
 
 
@@ -22,6 +23,7 @@ const App = () => {
           <Route path='/coin/:id' element={<CoinDetails />} />
           <Route path='*' element={"Error"} />
         </Routes>
+        {/* <Footer /> */}
       </Router>
     </>
   )

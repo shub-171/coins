@@ -2,13 +2,14 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from "axios";
 import Loader from './Loader';
 import { Link } from 'react-router-dom';
+import Footer from './Footer';
 
 const Coins = () => {
     const [coins, setCoins] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currency, setCurrency] = useState("inr");
     const [page, setPage] = useState(1);
-    const [loadedPages, setLoadedPages] = useState([]); // Track the loaded pages
+    const [loadedPages, setLoadedPages] = useState([]);
     const [hasMore, setHasMore] = useState(true);
 
     const currencySymbol = currency === "inr" ? "₹" : currency === "eur" ? "€" : "$";
@@ -25,17 +26,15 @@ const Coins = () => {
     useEffect(() => {
         const fetchCoins = async () => {
             try {
-                if (!loadedPages.includes(page)) { // Check if the page is not loaded yet
+                if (!loadedPages.includes(page)) {
                     const apiLink = `https://api.coingecko.com/api/v3`
                     const { data } = await axios.get(`${apiLink}/coins/markets?vs_currency=${currency}&page=${page}&per_page=20`);
                     if (data.length === 0) {
                         setHasMore(false);
                     } else {
-                        // Append new data to the existing coins state
                         setCoins(prevCoins => [...prevCoins, ...data]);
                         setLoading(false);
                     }
-                    // Update the loadedPages state with the loaded page number
                     setLoadedPages(prevLoadedPages => [...prevLoadedPages, page]);
                 } else {
                     setLoading(false);
@@ -45,7 +44,7 @@ const Coins = () => {
             }
         };
         fetchCoins();
-    }, [currency, page, loadedPages]); // Include loadedPages in the dependency array
+    }, [currency, page, loadedPages]); 
 
     useEffect(() => {
         window.addEventListener("scroll", handleScroll);
@@ -89,6 +88,7 @@ const Coins = () => {
                         ))}
                         {loading && <Loader />}
                     </div>
+                    <Footer />
                 </>
             }
         </>
